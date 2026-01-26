@@ -1296,8 +1296,8 @@
              try {
                 const userEmail = auth.currentUser.email; 
                 await signOut(auth);
-                const baseUrl = 'https://stack-base.github.io/account/login.html';
-                const redirectUrl = 'https://stack-base.github.io/account/dashboard.html?view=account-center';
+                const baseUrl = 'https://stack-base.github.io/account/login';
+                const redirectUrl = 'https://stack-base.github.io/workspace/page?view=account-center';
                 window.location.href = `${baseUrl}?redirectUrl=${encodeURIComponent(redirectUrl)}&flow=link&link_email=${encodeURIComponent(userEmail)}`;
                 
              } catch (error) {
@@ -1361,7 +1361,7 @@
                 try {
                     await deleteUser(user);
                     alert('Your account has been deleted.');
-                    window.location.replace('https://stack-base.github.io/account/login.html');
+                    window.location.replace('https://stack-base.github.io/account/login');
                 } catch (error) {
                     console.error(error);
                     if (error.code === 'auth/requires-recent-login') {
@@ -1401,7 +1401,7 @@
                     populateProfileForm(user);
                 }
             } else {
-                window.location.replace('https://stack-base.github.io/account/login.html?redirectUrl=https://stack-base.github.io/account/dashboard');
+                window.location.replace('https://stack-base.github.io/account/login?redirectUrl=https://stack-base.github.io/workspace/page?view=dashboard');
             }
         });
         function renderProfile(user) {
