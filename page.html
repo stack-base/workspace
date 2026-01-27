@@ -52,10 +52,6 @@
             --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --shadow-island: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.03);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-            
-            /* Premium Gradients */
-            --gradient-pro: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-            --gradient-glow: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 60%);
         }
         html.dark {
             --bg-page: #000000;
@@ -75,9 +71,6 @@
             --shadow-sm: none;
             --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
             --shadow-island: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.05);
-            
-            --gradient-pro: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            --gradient-glow: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.2) 0%, transparent 60%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 12px; height: 12px; }
@@ -631,91 +624,6 @@
             .settings-card-row { flex-direction: column; align-items: flex-start; }
             .settings-card-row .btn-primary { width: 100%; }
         }
-
-        /* --- Subscription View Styles (REDUX GRID) --- */
-        .subscription-view {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 6rem 2rem 4rem;
-            min-height: 100%;
-            display: flex;
-            flex-direction: column;
-            animation: fadeIn 0.4s ease-out;
-        }
-        .sub-hero { text-align: center; margin-bottom: 3rem; position: relative; }
-        .sub-hero h2 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 1rem; background: var(--gradient-pro); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .sub-hero p { font-size: 1rem; color: var(--text-muted); max-width: 500px; margin: 0 auto; line-height: 1.6; }
-        
-        /* The Grid */
-        .sub-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            width: 100%;
-            padding-bottom: 2rem;
-        }
-
-        .plan-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 24px;
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .plan-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); }
-        
-        /* Specific Styles for PRO card */
-        .plan-card.pro-tier {
-            border-color: rgba(37, 99, 235, 0.4);
-            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1), var(--shadow-island);
-        }
-        .plan-card.pro-tier::before {
-            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 60%); pointer-events: none;
-        }
-        
-        .plan-badge {
-            align-self: flex-start;
-            padding: 0.35rem 0.75rem; border-radius: 99px;
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-            margin-bottom: 1rem; display: inline-block;
-        }
-        .badge-lite { background: var(--bg-hover); color: var(--text-muted); border: 1px solid var(--border-color); }
-        .badge-solo { background: rgba(239, 68, 68, 0.1); color: var(--color-timetrekker); }
-        .badge-finance { background: rgba(13, 148, 136, 0.1); color: var(--color-swiftinvoice); }
-        .badge-pro { background: var(--bg-active); color: var(--primary); border: 1px solid rgba(37, 99, 235, 0.2); }
-
-        .plan-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem; }
-        .plan-price { font-size: 1.75rem; font-weight: 800; margin-bottom: 1.5rem; letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 4px; }
-        .plan-price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
-        
-        .plan-features { flex: 1; margin-bottom: 2rem; }
-        .feat-row { display: flex; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; align-items: flex-start; }
-        .feat-row i { color: var(--success); font-size: 1rem; margin-top: 2px; }
-        .feat-row.dim i { color: var(--text-light); }
-        
-        .btn-plan {
-            width: 100%; padding: 0.8rem; border-radius: 12px;
-            font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color);
-            background: var(--bg-page); color: var(--text-main); transition: all 0.2s;
-        }
-        .btn-plan:hover { background: var(--bg-hover); border-color: var(--text-light); }
-        
-        /* Active State */
-        .plan-card.active-plan { border-color: var(--success); background-color: rgba(16, 185, 129, 0.03); }
-        .plan-card.active-plan .btn-plan { background: var(--success); color: white; border-color: var(--success); cursor: default; }
-        
-        /* Pro Button override */
-        .plan-card.pro-tier .btn-plan { background: var(--text-main); color: var(--bg-page); border: none; }
-        .plan-card.pro-tier .btn-plan:hover { opacity: 0.9; transform: scale(1.02); }
-
-        @media (min-width: 1024px) {
-             .sub-hero h2 { font-size: 3.5rem; }
-        }
     </style>
 </head>
 <body>
@@ -761,10 +669,6 @@
                 <a href="?view=account-center" class="nav-item" id="nav-account-center">
                     <i class="ph ph-user-circle"></i>
                     Account Center
-                </a>
-                <a href="?view=subscription" class="nav-item" id="nav-subscription">
-                    <i class="ph ph-crown"></i>
-                    Subscription
                 </a>
                 <div class="nav-section-label">Support</div>
                 <a href="?view=help" class="nav-item" id="nav-help">
@@ -1018,16 +922,6 @@
                 </div>
             </div>
 
-            <div id="subscription-view" class="subscription-view hidden fade-in">
-                <div class="sub-hero">
-                    <h2>Choose your flow.</h2>
-                    <p>Unlock the exact tools you need, or get it all with StackBase Pro.</p>
-                </div>
-                
-                <div id="sub-grid" class="sub-grid">
-                    </div>
-            </div>
-
             <div id="help-view" class="help-view hidden fade-in">
                 <div class="help-hero">
                     <h1 class="help-title">How can we help you?</h1>
@@ -1192,14 +1086,11 @@
             
             // Views
             viewDashboard: document.getElementById('dashboard-view'),
+            // RENAMED VIEW REFERENCE
             viewAccountCenter: document.getElementById('account-center-view'),
-            viewSubscription: document.getElementById('subscription-view'),
             viewHelp: document.getElementById('help-view'),
             viewSettings: document.getElementById('settings-view'),
             
-            // Subscription Specific
-            subGrid: document.getElementById('sub-grid'),
-
             // Help Specific
             faqSearch: document.getElementById('faq-search'),
             contactBtn: document.getElementById('contact-support-btn'),
@@ -1248,7 +1139,6 @@
             // Hide all views
             dom.viewDashboard.classList.add('hidden');
             dom.viewAccountCenter.classList.add('hidden');
-            dom.viewSubscription.classList.add('hidden');
             dom.viewHelp.classList.add('hidden');
             dom.viewSettings.classList.add('hidden');
 
@@ -1258,9 +1148,6 @@
             } else if (viewName === 'account-center') { 
                 dom.viewAccountCenter.classList.remove('hidden');
                 if(auth.currentUser) populateProfileForm(auth.currentUser);
-            } else if (viewName === 'subscription') {
-                dom.viewSubscription.classList.remove('hidden');
-                updateSubscriptionUI();
             } else if (viewName === 'help') {
                 dom.viewHelp.classList.remove('hidden');
             } else if (viewName === 'settings') {
@@ -1307,135 +1194,6 @@
                 dom.toast.classList.remove('show');
             }, 3000);
         }
-
-        // --- Subscription Logic ---
-        const PLANS = [
-            {
-                id: 'lite',
-                name: 'StackBase Lite',
-                price: 'Free',
-                badge: 'Lite',
-                badgeClass: 'badge-lite',
-                features: [
-                    'Offline Mode only',
-                    'Basic Task List',
-                    'No Cloud Sync'
-                ]
-            },
-            {
-                id: 'solo_time',
-                name: 'TimeTrekker Solo',
-                price: '$4/mo',
-                badge: 'Productivity',
-                badgeClass: 'badge-solo',
-                features: [
-                    'Advanced Timer',
-                    'Focus Reports',
-                    'Cloud Sync (Time only)'
-                ]
-            },
-            {
-                id: 'solo_inv',
-                name: 'SwiftInvoice Solo',
-                price: '$8/mo',
-                badge: 'Finance',
-                badgeClass: 'badge-finance',
-                features: [
-                    'Unlimited Invoices',
-                    'Client Management',
-                    'PDF Export'
-                ]
-            },
-            {
-                id: 'bundle_fin',
-                name: 'Finance Suite',
-                price: '$12/mo',
-                badge: 'Bundle',
-                badgeClass: 'badge-finance',
-                features: [
-                    'SwiftInvoice + DataStudio',
-                    'Revenue Analytics',
-                    'Financial Reports'
-                ]
-            },
-            {
-                id: 'pro',
-                name: 'StackBase Pro',
-                price: '$0',
-                strikePrice: '$29',
-                badge: 'Recommended',
-                badgeClass: 'badge-pro',
-                isPro: true,
-                features: [
-                    'All Apps Included',
-                    'Priority Support',
-                    'Cloud Sync Everything',
-                    'Early Access Features'
-                ]
-            }
-        ];
-
-        function updateSubscriptionUI() {
-            // DEFAULT TO PRO if not set
-            let currentPlanId = localStorage.getItem('stackbase_plan_id');
-            if (!currentPlanId) {
-                currentPlanId = 'pro';
-                localStorage.setItem('stackbase_plan_id', 'pro');
-            }
-            
-            dom.subGrid.innerHTML = ''; // Clear grid
-
-            PLANS.forEach(plan => {
-                const isActive = (plan.id === currentPlanId);
-                const isPro = plan.isPro;
-                
-                let btnHtml = '';
-                if(isActive) {
-                    btnHtml = `<button class="btn-plan" disabled>Current Plan</button>`;
-                } else {
-                    btnHtml = `<button onclick="switchPlan('${plan.id}')" class="btn-plan">Subscribe</button>`;
-                }
-
-                // Render features
-                const featHtml = plan.features.map(f => `
-                    <div class="feat-row">
-                        <i class="ph-bold ph-check"></i> ${f}
-                    </div>
-                `).join('');
-
-                const priceHtml = plan.strikePrice 
-                    ? `<div class="plan-price"><span style="text-decoration:line-through">${plan.strikePrice}</span>${plan.price}</div>`
-                    : `<div class="plan-price">${plan.price}</div>`;
-
-                const cardClasses = `plan-card ${isActive ? 'active-plan' : ''} ${isPro ? 'pro-tier' : ''}`;
-
-                const cardHtml = `
-                    <div class="${cardClasses}">
-                        <div class="plan-badge ${plan.badgeClass}">${plan.badge}</div>
-                        <h3 class="plan-title">${plan.name}</h3>
-                        ${priceHtml}
-                        <div class="plan-features">
-                            ${featHtml}
-                        </div>
-                        <div style="margin-top:auto">
-                            ${btnHtml}
-                        </div>
-                    </div>
-                `;
-                
-                dom.subGrid.innerHTML += cardHtml;
-            });
-        }
-
-        window.switchPlan = function(planId) {
-            const plan = PLANS.find(p => p.id === planId);
-            if(confirm(`Switch subscription to ${plan.name}?`)) {
-                localStorage.setItem('stackbase_plan_id', planId);
-                updateSubscriptionUI();
-                showToast(`Switched to ${plan.name}`);
-            }
-        };
-
         
         // FAQ & Help Logic
         document.querySelectorAll('.faq-question').forEach(button => {
