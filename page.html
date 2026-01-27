@@ -624,6 +624,31 @@
             .settings-card-row { flex-direction: column; align-items: flex-start; }
             .settings-card-row .btn-primary { width: 100%; }
         }
+
+        /* --- Subscription View Styles --- */
+        .subscription-view {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding-top: 4rem;
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+            padding-bottom: 2rem;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+        .pricing-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 2rem; position: relative; transition: var(--transition); display: flex; flex-direction: column; }
+        .pricing-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); }
+        .pricing-card.featured { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+        .pricing-card.featured:hover { box-shadow: 0 8px 30px rgba(37, 99, 235, 0.15); }
+        .pricing-header { margin-bottom: 1.5rem; }
+        .plan-name { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; }
+        .plan-price { font-size: 2rem; font-weight: 800; color: var(--text-main); }
+        .plan-period { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+        .feature-list { list-style: none; margin: 2rem 0; flex: 1; }
+        .feature-item { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+        .feature-item i { color: var(--success); font-size: 1.1rem; }
+        .badge-beta { position: absolute; top: -12px; right: 2rem; background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        .current-plan-badge { display: inline-block; width: 100%; text-align: center; padding: 0.85rem; background-color: var(--bg-active); color: var(--primary); font-weight: 600; border-radius: var(--radius-md); font-size: 0.9rem; border: 1px solid transparent; }
     </style>
 </head>
 <body>
@@ -669,6 +694,10 @@
                 <a href="?view=account-center" class="nav-item" id="nav-account-center">
                     <i class="ph ph-user-circle"></i>
                     Account Center
+                </a>
+                <a href="?view=subscription" class="nav-item" id="nav-subscription">
+                    <i class="ph ph-crown"></i>
+                    Subscription
                 </a>
                 <div class="nav-section-label">Support</div>
                 <a href="?view=help" class="nav-item" id="nav-help">
@@ -922,6 +951,54 @@
                 </div>
             </div>
 
+            <div id="subscription-view" class="subscription-view hidden fade-in">
+                <div class="section-header" style="text-align: center; justify-content: center; flex-direction: column; margin-bottom: 1rem;">
+                    <h2 class="section-title" style="font-size: 2rem;">Choose your plan</h2>
+                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Unlock the full potential of StackBase.</p>
+                </div>
+                
+                <div class="pricing-grid">
+                    <div class="pricing-card" id="plan-free-card">
+                        <div class="pricing-header">
+                            <h3 class="plan-name">Starter</h3>
+                            <div class="plan-price">$0</div>
+                            <span class="plan-period">Free forever</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item"><i class="ph-bold ph-check"></i> Unlimited Tasks</li>
+                            <li class="feature-item"><i class="ph-bold ph-check"></i> Basic Analytics</li>
+                            <li class="feature-item"><i class="ph-bold ph-check"></i> 1 Project Limit</li>
+                            <li class="feature-item"><i class="ph-bold ph-check"></i> Community Support</li>
+                        </ul>
+                        <div id="btn-container-free">
+                            <span class="current-plan-badge">Current Plan</span>
+                        </div>
+                    </div>
+
+                    <div class="pricing-card featured" id="plan-pro-card">
+                        <div class="badge-beta">Limited Beta Offer</div>
+                        <div class="pricing-header">
+                            <h3 class="plan-name" style="color: var(--primary);">StackBase Pro</h3>
+                            <div class="plan-price">
+                                <span style="text-decoration: line-through; opacity: 0.5; font-size: 1.2rem; margin-right: 0.5rem; color: var(--text-muted);">$29</span>
+                                $0
+                            </div>
+                            <span class="plan-period">Free during Open Beta</span>
+                        </div>
+                        <ul class="feature-list">
+                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> <strong>Unlimited Projects</strong></li>
+                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Advanced Invoice Analytics</li>
+                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Priority Support</li>
+                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Early Access to New Apps</li>
+                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Dark Mode Sync</li>
+                        </ul>
+                        <div id="btn-container-pro">
+                            <button class="btn-primary" id="btn-upgrade-pro">Switch to Pro</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div id="help-view" class="help-view hidden fade-in">
                 <div class="help-hero">
                     <h1 class="help-title">How can we help you?</h1>
@@ -1086,11 +1163,16 @@
             
             // Views
             viewDashboard: document.getElementById('dashboard-view'),
-            // RENAMED VIEW REFERENCE
             viewAccountCenter: document.getElementById('account-center-view'),
+            viewSubscription: document.getElementById('subscription-view'),
             viewHelp: document.getElementById('help-view'),
             viewSettings: document.getElementById('settings-view'),
             
+            // Subscription Specific
+            btnContainerFree: document.getElementById('btn-container-free'),
+            btnContainerPro: document.getElementById('btn-container-pro'),
+            btnUpgradePro: document.getElementById('btn-upgrade-pro'),
+
             // Help Specific
             faqSearch: document.getElementById('faq-search'),
             contactBtn: document.getElementById('contact-support-btn'),
@@ -1139,6 +1221,7 @@
             // Hide all views
             dom.viewDashboard.classList.add('hidden');
             dom.viewAccountCenter.classList.add('hidden');
+            dom.viewSubscription.classList.add('hidden');
             dom.viewHelp.classList.add('hidden');
             dom.viewSettings.classList.add('hidden');
 
@@ -1148,6 +1231,9 @@
             } else if (viewName === 'account-center') { 
                 dom.viewAccountCenter.classList.remove('hidden');
                 if(auth.currentUser) populateProfileForm(auth.currentUser);
+            } else if (viewName === 'subscription') {
+                dom.viewSubscription.classList.remove('hidden');
+                updateSubscriptionUI();
             } else if (viewName === 'help') {
                 dom.viewHelp.classList.remove('hidden');
             } else if (viewName === 'settings') {
@@ -1194,6 +1280,50 @@
                 dom.toast.classList.remove('show');
             }, 3000);
         }
+
+        // --- Subscription Logic ---
+        function updateSubscriptionUI() {
+            const currentPlan = localStorage.getItem('stackbase_plan') || 'free';
+            
+            if (currentPlan === 'pro') {
+                // If Pro is active
+                dom.btnContainerFree.innerHTML = '<button class="btn-primary" onclick="downgradePlan()" style="background-color: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none;">Downgrade</button>';
+                dom.btnContainerPro.innerHTML = '<span class="current-plan-badge">Current Plan</span>';
+            } else {
+                // If Free is active
+                dom.btnContainerFree.innerHTML = '<span class="current-plan-badge">Current Plan</span>';
+                dom.btnContainerPro.innerHTML = '<button class="btn-primary" id="btn-upgrade-pro">Switch to Pro</button>';
+                
+                // Re-attach listener because innerHTML wiped it
+                document.getElementById('btn-upgrade-pro').addEventListener('click', upgradeToPro);
+            }
+        }
+
+        function upgradeToPro() {
+            const btn = document.getElementById('btn-upgrade-pro');
+            const originalText = btn.textContent;
+            btn.textContent = 'Activating...';
+            btn.disabled = true;
+            
+            // Simulate network request
+            setTimeout(() => {
+                localStorage.setItem('stackbase_plan', 'pro');
+                updateSubscriptionUI();
+                showToast('Welcome to StackBase Pro!');
+                
+                // Optional: Confetti or animation could go here
+            }, 1000);
+        }
+
+        // Make downgrade accessible globally for the onclick handler in innerHTML
+        window.downgradePlan = function() {
+            if(confirm('Are you sure you want to downgrade? You will lose access to Pro features.')) {
+                 localStorage.setItem('stackbase_plan', 'free');
+                 updateSubscriptionUI();
+                 showToast('Plan downgraded successfully.');
+            }
+        };
+
         
         // FAQ & Help Logic
         document.querySelectorAll('.faq-question').forEach(button => {
