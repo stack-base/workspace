@@ -1120,6 +1120,14 @@
 
         // --- Routing Logic ---
         function handleRouting() {
+            // Check if 'view' parameter is missing
+            const url = new URL(window.location);
+            if (!url.searchParams.has('view')) {
+                // Update the URL to include ?view=dashboard
+                url.searchParams.set('view', 'dashboard');
+                window.history.replaceState({}, '', url);
+            }
+
             const params = new URLSearchParams(window.location.search);
             const viewName = params.get('view') || 'dashboard'; 
 
@@ -1137,7 +1145,7 @@
             // Show selected view
             if (viewName === 'dashboard') {
                 dom.viewDashboard.classList.remove('hidden');
-            } else if (viewName === 'account-center') { // CHECKING FOR NEW NAME
+            } else if (viewName === 'account-center') { 
                 dom.viewAccountCenter.classList.remove('hidden');
                 if(auth.currentUser) populateProfileForm(auth.currentUser);
             } else if (viewName === 'help') {
