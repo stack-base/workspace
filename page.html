@@ -53,9 +53,11 @@
             --shadow-island: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.03);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             
-            /* Premium Gradients */
-            --gradient-pro: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-            --gradient-glow: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 60%);
+            /* MBA Gradients */
+            --gradient-pro: linear-gradient(135deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
+            --gradient-pro-glow: radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.15) 0%, transparent 70%);
+            --gradient-gold: linear-gradient(135deg, #F59E0B 0%, #fbbf24 100%);
+            --gradient-subtle: linear-gradient(to bottom right, var(--bg-card) 0%, var(--bg-hover) 100%);
         }
         html.dark {
             --bg-page: #000000;
@@ -76,8 +78,8 @@
             --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
             --shadow-island: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.05);
             
-            --gradient-pro: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            --gradient-glow: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.2) 0%, transparent 60%);
+            --gradient-pro: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 50%, #ec4899 100%);
+            --gradient-pro-glow: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.25) 0%, transparent 70%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 12px; height: 12px; }
@@ -632,7 +634,7 @@
             .settings-card-row .btn-primary { width: 100%; }
         }
 
-        /* --- Subscription View Styles (REDUX GRID) --- */
+        /* --- Subscription View Styles (MBA GRID) --- */
         .subscription-view {
             max-width: 1400px;
             margin: 0 auto;
@@ -662,56 +664,66 @@
             padding: 2rem;
             display: flex;
             flex-direction: column;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             position: relative;
             overflow: hidden;
+            background: var(--gradient-subtle);
         }
-        .plan-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); }
+        .plan-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-card); }
         
-        /* Specific Styles for PRO card */
+        /* Highlight specific for PRO */
         .plan-card.pro-tier {
-            border-color: rgba(37, 99, 235, 0.4);
-            box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.1), var(--shadow-island);
+            border: double 1px transparent;
+            background-image: linear-gradient(var(--bg-card), var(--bg-card)), var(--gradient-pro);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+            box-shadow: 0 10px 40px -10px rgba(99, 102, 241, 0.3);
+            z-index: 2;
         }
         .plan-card.pro-tier::before {
             content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
-            background: radial-gradient(circle at 50% 50%, rgba(37, 99, 235, 0.08) 0%, transparent 60%); pointer-events: none;
+            background: var(--gradient-pro-glow); pointer-events: none; opacity: 0.5;
         }
         
         .plan-badge {
             align-self: flex-start;
             padding: 0.35rem 0.75rem; border-radius: 99px;
-            font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
-            margin-bottom: 1rem; display: inline-block;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 1.25rem; display: inline-block;
         }
-        .badge-lite { background: var(--bg-hover); color: var(--text-muted); border: 1px solid var(--border-color); }
-        .badge-solo { background: rgba(239, 68, 68, 0.1); color: var(--color-timetrekker); }
-        .badge-finance { background: rgba(13, 148, 136, 0.1); color: var(--color-swiftinvoice); }
-        .badge-pro { background: var(--bg-active); color: var(--primary); border: 1px solid rgba(37, 99, 235, 0.2); }
+        .badge-lite { background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); }
+        .badge-solo { background: rgba(245, 158, 11, 0.1); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .badge-finance { background: rgba(13, 148, 136, 0.1); color: var(--color-swiftinvoice); border: 1px solid rgba(13, 148, 136, 0.2); }
+        .badge-pro { background: var(--gradient-pro); color: white; border: none; box-shadow: 0 4px 12px rgba(168, 85, 247, 0.3); }
 
-        .plan-title { font-size: 1.25rem; font-weight: 800; margin-bottom: 0.25rem; }
-        .plan-price { font-size: 1.75rem; font-weight: 800; margin-bottom: 1.5rem; letter-spacing: -0.02em; display: flex; align-items: baseline; gap: 4px; }
-        .plan-price span { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
+        .plan-title { font-size: 1.35rem; font-weight: 800; margin-bottom: 0.25rem; letter-spacing: -0.02em; }
+        .plan-price { font-size: 2rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.03em; display: flex; align-items: baseline; gap: 6px; }
+        .plan-price span { font-size: 1rem; color: var(--text-muted); font-weight: 500; text-decoration: line-through; opacity: 0.6; }
+        
+        .total-value { font-size: 0.75rem; color: var(--primary); font-weight: 600; margin-bottom: 1.5rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.8; }
         
         .plan-features { flex: 1; margin-bottom: 2rem; }
-        .feat-row { display: flex; gap: 0.6rem; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem; align-items: flex-start; }
-        .feat-row i { color: var(--success); font-size: 1rem; margin-top: 2px; }
-        .feat-row.dim i { color: var(--text-light); }
+        .feat-row { display: flex; gap: 0.75rem; font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.85rem; align-items: flex-start; font-weight: 500; }
+        .feat-row i { color: var(--text-light); font-size: 1.1rem; margin-top: 1px; }
+        .feat-row.included i { color: var(--success); }
+        .feat-row.pro-feat i { color: #a855f7; }
+        .feat-row.dim { opacity: 0.5; }
         
         .btn-plan {
-            width: 100%; padding: 0.8rem; border-radius: 12px;
-            font-size: 0.9rem; font-weight: 600; cursor: pointer; border: 1px solid var(--border-color);
-            background: var(--bg-page); color: var(--text-main); transition: all 0.2s;
+            width: 100%; padding: 1rem; border-radius: 16px;
+            font-size: 0.95rem; font-weight: 700; cursor: pointer; border: 1px solid var(--border-color);
+            background: transparent; color: var(--text-main); transition: all 0.2s;
         }
-        .btn-plan:hover { background: var(--bg-hover); border-color: var(--text-light); }
+        .btn-plan:hover { border-color: var(--text-main); background: var(--bg-hover); }
         
         /* Active State */
-        .plan-card.active-plan { border-color: var(--success); background-color: rgba(16, 185, 129, 0.03); }
-        .plan-card.active-plan .btn-plan { background: var(--success); color: white; border-color: var(--success); cursor: default; }
+        .plan-card.active-plan { border-color: var(--success); }
+        .plan-card.active-plan .btn-plan { background: rgba(16, 185, 129, 0.1); color: var(--success); border-color: transparent; cursor: default; }
         
         /* Pro Button override */
-        .plan-card.pro-tier .btn-plan { background: var(--text-main); color: var(--bg-page); border: none; }
-        .plan-card.pro-tier .btn-plan:hover { opacity: 0.9; transform: scale(1.02); }
+        .plan-card.pro-tier .btn-plan { background: var(--text-main); color: var(--bg-page); border: none; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .plan-card.pro-tier .btn-plan:hover { transform: scale(1.02); box-shadow: 0 15px 30px rgba(0,0,0,0.15); }
+        .plan-card.pro-tier .plan-title { background: var(--gradient-pro); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
         @media (min-width: 1024px) {
              .sub-hero h2 { font-size: 3.5rem; }
@@ -1314,12 +1326,12 @@
                 id: 'lite',
                 name: 'StackBase Lite',
                 price: 'Free',
-                badge: 'Lite',
+                badge: 'Basic',
                 badgeClass: 'badge-lite',
                 features: [
-                    'Offline Mode only',
-                    'Basic Task List',
-                    'No Cloud Sync'
+                    {text: 'Offline Mode only', included: true},
+                    {text: 'Basic Task List', included: true},
+                    {text: 'No Cloud Sync', included: false}
                 ]
             },
             {
@@ -1329,9 +1341,9 @@
                 badge: 'Productivity',
                 badgeClass: 'badge-solo',
                 features: [
-                    'Advanced Timer',
-                    'Focus Reports',
-                    'Cloud Sync (Time only)'
+                    {text: 'Advanced Timer', included: true},
+                    {text: 'Focus Reports', included: true},
+                    {text: 'Cloud Sync (Time only)', included: true}
                 ]
             },
             {
@@ -1341,21 +1353,9 @@
                 badge: 'Finance',
                 badgeClass: 'badge-finance',
                 features: [
-                    'Unlimited Invoices',
-                    'Client Management',
-                    'PDF Export'
-                ]
-            },
-            {
-                id: 'bundle_fin',
-                name: 'Finance Suite',
-                price: '$12/mo',
-                badge: 'Bundle',
-                badgeClass: 'badge-finance',
-                features: [
-                    'SwiftInvoice + DataStudio',
-                    'Revenue Analytics',
-                    'Financial Reports'
+                    {text: 'Unlimited Invoices', included: true},
+                    {text: 'Client Management', included: true},
+                    {text: 'PDF Export', included: true}
                 ]
             },
             {
@@ -1363,14 +1363,15 @@
                 name: 'StackBase Pro',
                 price: '$0',
                 strikePrice: '$29',
-                badge: 'Recommended',
+                totalValue: '$50+ Value',
+                badge: 'Best Value',
                 badgeClass: 'badge-pro',
                 isPro: true,
                 features: [
-                    'All Apps Included',
-                    'Priority Support',
-                    'Cloud Sync Everything',
-                    'Early Access Features'
+                    {text: 'Everything in Solos', included: true, isPro: true},
+                    {text: 'Priority Support', included: true, isPro: true},
+                    {text: 'Cloud Sync Everything', included: true, isPro: true},
+                    {text: 'Early Access Features', included: true, isPro: true}
                 ]
             }
         ];
@@ -1398,14 +1399,18 @@
 
                 // Render features
                 const featHtml = plan.features.map(f => `
-                    <div class="feat-row">
-                        <i class="ph-bold ph-check"></i> ${f}
+                    <div class="feat-row ${f.included ? 'included' : 'dim'} ${f.isPro ? 'pro-feat' : ''}">
+                        <i class="${f.included ? 'ph-bold ph-check' : 'ph-bold ph-minus'}"></i> ${f.text}
                     </div>
                 `).join('');
 
                 const priceHtml = plan.strikePrice 
                     ? `<div class="plan-price"><span style="text-decoration:line-through">${plan.strikePrice}</span>${plan.price}</div>`
                     : `<div class="plan-price">${plan.price}</div>`;
+                
+                const valueHtml = plan.totalValue 
+                    ? `<div class="total-value">${plan.totalValue}</div>`
+                    : `<div class="total-value" style="opacity:0">&nbsp;</div>`;
 
                 const cardClasses = `plan-card ${isActive ? 'active-plan' : ''} ${isPro ? 'pro-tier' : ''}`;
 
@@ -1414,6 +1419,7 @@
                         <div class="plan-badge ${plan.badgeClass}">${plan.badge}</div>
                         <h3 class="plan-title">${plan.name}</h3>
                         ${priceHtml}
+                        ${valueHtml}
                         <div class="plan-features">
                             ${featHtml}
                         </div>
@@ -1433,6 +1439,13 @@
                 localStorage.setItem('stackbase_plan_id', planId);
                 updateSubscriptionUI();
                 showToast(`Switched to ${plan.name}`);
+                
+                // Add confetti effect logic if desired
+                if(plan.isPro) {
+                    const hero = document.querySelector('.sub-hero h2');
+                    hero.textContent = "Welcome to Pro.";
+                    setTimeout(() => hero.textContent = "Choose your flow.", 2000);
+                }
             }
         };
 
