@@ -52,6 +52,10 @@
             --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.05);
             --shadow-island: 0 8px 30px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0,0,0,0.03);
             --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Premium Gradients */
+            --gradient-pro: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
+            --gradient-glow: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.15) 0%, transparent 60%);
         }
         html.dark {
             --bg-page: #000000;
@@ -71,6 +75,9 @@
             --shadow-sm: none;
             --shadow-card: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
             --shadow-island: 0 10px 40px -10px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255,255,255,0.05);
+            
+            --gradient-pro: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            --gradient-glow: radial-gradient(circle at 50% 0%, rgba(59, 130, 246, 0.2) 0%, transparent 60%);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
         ::-webkit-scrollbar { width: 12px; height: 12px; }
@@ -625,30 +632,98 @@
             .settings-card-row .btn-primary { width: 100%; }
         }
 
-        /* --- Subscription View Styles --- */
+        /* --- Subscription View Styles (REDUX) --- */
         .subscription-view {
             max-width: 1000px;
-            margin: 2rem auto;
-            padding-top: 4rem;
-            padding-left: 1.5rem;
-            padding-right: 1.5rem;
-            padding-bottom: 2rem;
-            animation: fadeIn 0.3s ease-out;
+            margin: 0 auto;
+            padding: 6rem 2rem 4rem;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            animation: fadeIn 0.4s ease-out;
         }
-        .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
-        .pricing-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-xl); padding: 2rem; position: relative; transition: var(--transition); display: flex; flex-direction: column; }
-        .pricing-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-card); }
-        .pricing-card.featured { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
-        .pricing-card.featured:hover { box-shadow: 0 8px 30px rgba(37, 99, 235, 0.15); }
-        .pricing-header { margin-bottom: 1.5rem; }
-        .plan-name { font-size: 1.1rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; }
-        .plan-price { font-size: 2rem; font-weight: 800; color: var(--text-main); }
-        .plan-period { font-size: 0.9rem; color: var(--text-muted); font-weight: 500; }
-        .feature-list { list-style: none; margin: 2rem 0; flex: 1; }
-        .feature-item { display: flex; align-items: center; gap: 0.75rem; color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
-        .feature-item i { color: var(--success); font-size: 1.1rem; }
-        .badge-beta { position: absolute; top: -12px; right: 2rem; background: var(--primary); color: white; padding: 0.25rem 0.75rem; border-radius: 99px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-        .current-plan-badge { display: inline-block; width: 100%; text-align: center; padding: 0.85rem; background-color: var(--bg-active); color: var(--primary); font-weight: 600; border-radius: var(--radius-md); font-size: 0.9rem; border: 1px solid transparent; }
+        .sub-hero { text-align: center; margin-bottom: 4rem; position: relative; }
+        .sub-hero h2 { font-size: 3rem; font-weight: 800; letter-spacing: -0.04em; margin-bottom: 1rem; background: var(--gradient-pro); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .sub-hero p { font-size: 1.2rem; color: var(--text-muted); max-width: 500px; margin: 0 auto; line-height: 1.6; }
+        
+        .sub-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            max-width: 500px;
+            margin: 0 auto;
+            gap: 2rem;
+        }
+
+        .pro-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 32px;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-island);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        /* Glow Effect Behind */
+        .pro-card::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: var(--gradient-glow); opacity: 0.6; z-index: 0; pointer-events: none;
+        }
+        .pro-content { position: relative; z-index: 1; text-align: center; }
+        
+        .badge-premium {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-active); color: var(--primary);
+            padding: 0.5rem 1rem; border-radius: 99px;
+            font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+            margin-bottom: 1.5rem; border: 1px solid rgba(37, 99, 235, 0.1);
+        }
+        
+        .pro-price { font-size: 3.5rem; font-weight: 800; color: var(--text-main); margin: 0.5rem 0 0.5rem; letter-spacing: -0.02em; }
+        .pro-period { font-size: 1.1rem; color: var(--text-muted); font-weight: 500; margin-bottom: 2.5rem; }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr; 
+            gap: 1rem;
+            text-align: left;
+            margin: 0 auto 3rem;
+            max-width: 380px;
+        }
+        
+        .pro-feature {
+            display: flex; align-items: center; gap: 1rem;
+            font-size: 1rem; color: var(--text-main); font-weight: 500;
+        }
+        .pro-feature i {
+            color: var(--primary); font-size: 1.3rem; 
+            background: var(--bg-active); padding: 4px; border-radius: 50%;
+        }
+
+        .action-area { display: flex; flex-direction: column; gap: 1rem; align-items: center; }
+        
+        .btn-pro {
+            background: var(--text-main); color: var(--bg-page);
+            width: 100%; padding: 1.1rem; border-radius: 99px;
+            font-size: 1.1rem; font-weight: 700; border: none; cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .btn-pro:hover { transform: scale(1.02); box-shadow: 0 15px 35px rgba(0,0,0,0.15); }
+        .btn-pro:active { transform: scale(0.98); }
+
+        .btn-downgrade {
+            background: transparent; color: var(--text-muted);
+            font-size: 0.9rem; border: none; cursor: pointer;
+            font-weight: 500; text-decoration: underline; opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+        .btn-downgrade:hover { opacity: 1; color: var(--text-main); }
+        
+        @media (min-width: 768px) {
+             .sub-hero h2 { font-size: 4rem; }
+        }
     </style>
 </head>
 <body>
@@ -952,48 +1027,33 @@
             </div>
 
             <div id="subscription-view" class="subscription-view hidden fade-in">
-                <div class="section-header" style="text-align: center; justify-content: center; flex-direction: column; margin-bottom: 1rem;">
-                    <h2 class="section-title" style="font-size: 2rem;">Choose your plan</h2>
-                    <p style="color: var(--text-muted); margin-top: 0.5rem;">Unlock the full potential of StackBase.</p>
+                <div class="sub-hero">
+                    <h2>Unlock Everything.</h2>
+                    <p>Experience the full power of StackBase with unlimited access. <br>Pro is currently free during Open Beta.</p>
                 </div>
                 
-                <div class="pricing-grid">
-                    <div class="pricing-card" id="plan-free-card">
-                        <div class="pricing-header">
-                            <h3 class="plan-name">Starter</h3>
-                            <div class="plan-price">$0</div>
-                            <span class="plan-period">Free forever</span>
-                        </div>
-                        <ul class="feature-list">
-                            <li class="feature-item"><i class="ph-bold ph-check"></i> Unlimited Tasks</li>
-                            <li class="feature-item"><i class="ph-bold ph-check"></i> Basic Analytics</li>
-                            <li class="feature-item"><i class="ph-bold ph-check"></i> 1 Project Limit</li>
-                            <li class="feature-item"><i class="ph-bold ph-check"></i> Community Support</li>
-                        </ul>
-                        <div id="btn-container-free">
-                            <span class="current-plan-badge">Current Plan</span>
-                        </div>
-                    </div>
-
-                    <div class="pricing-card featured" id="plan-pro-card">
-                        <div class="badge-beta">Limited Beta Offer</div>
-                        <div class="pricing-header">
-                            <h3 class="plan-name" style="color: var(--primary);">StackBase Pro</h3>
-                            <div class="plan-price">
-                                <span style="text-decoration: line-through; opacity: 0.5; font-size: 1.2rem; margin-right: 0.5rem; color: var(--text-muted);">$29</span>
-                                $0
+                <div class="sub-container">
+                    <div class="pro-card">
+                        <div class="pro-content">
+                            <div class="badge-premium">
+                                <i class="ph-fill ph-star"></i> Recommended
                             </div>
-                            <span class="plan-period">Free during Open Beta</span>
-                        </div>
-                        <ul class="feature-list">
-                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> <strong>Unlimited Projects</strong></li>
-                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Advanced Invoice Analytics</li>
-                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Priority Support</li>
-                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Early Access to New Apps</li>
-                            <li class="feature-item"><i class="ph-fill ph-check-circle" style="color: var(--primary);"></i> Dark Mode Sync</li>
-                        </ul>
-                        <div id="btn-container-pro">
-                            <button class="btn-primary" id="btn-upgrade-pro">Switch to Pro</button>
+                            <h3 style="font-size: 1.5rem; font-weight: 800; margin-bottom: 0.5rem;">StackBase Pro</h3>
+                            <div class="pro-price">
+                                <span style="font-size: 1.5rem; text-decoration: line-through; opacity: 0.3; margin-right: 10px; font-weight: 500;">$29</span>$0
+                            </div>
+                            <div class="pro-period">Free Forever (Early Adopter)</div>
+                            
+                            <div class="feature-grid">
+                                <div class="pro-feature"><i class="ph-bold ph-check"></i> Unlimited Projects</div>
+                                <div class="pro-feature"><i class="ph-bold ph-check"></i> Advanced Analytics</div>
+                                <div class="pro-feature"><i class="ph-bold ph-check"></i> Priority Support</div>
+                                <div class="pro-feature"><i class="ph-bold ph-check"></i> Early Access Features</div>
+                                <div class="pro-feature"><i class="ph-bold ph-check"></i> Dark Mode Sync</div>
+                            </div>
+                            
+                            <div id="sub-action-area" class="action-area">
+                                </div>
                         </div>
                     </div>
                 </div>
@@ -1169,9 +1229,7 @@
             viewSettings: document.getElementById('settings-view'),
             
             // Subscription Specific
-            btnContainerFree: document.getElementById('btn-container-free'),
-            btnContainerPro: document.getElementById('btn-container-pro'),
-            btnUpgradePro: document.getElementById('btn-upgrade-pro'),
+            subActionArea: document.getElementById('sub-action-area'),
 
             // Help Specific
             faqSearch: document.getElementById('faq-search'),
@@ -1283,39 +1341,47 @@
 
         // --- Subscription Logic ---
         function updateSubscriptionUI() {
-            const currentPlan = localStorage.getItem('stackbase_plan') || 'free';
+            // DEFAULT TO PRO if not set
+            let currentPlan = localStorage.getItem('stackbase_plan');
+            if (!currentPlan) {
+                currentPlan = 'pro';
+                localStorage.setItem('stackbase_plan', 'pro');
+            }
             
             if (currentPlan === 'pro') {
-                // If Pro is active
-                dom.btnContainerFree.innerHTML = '<button class="btn-primary" onclick="downgradePlan()" style="background-color: var(--bg-hover); color: var(--text-main); border: 1px solid var(--border-color); box-shadow: none;">Downgrade</button>';
-                dom.btnContainerPro.innerHTML = '<span class="current-plan-badge">Current Plan</span>';
+                // Active Pro State
+                dom.subActionArea.innerHTML = `
+                    <button class="btn-pro" disabled style="background: var(--bg-active); color: var(--primary); cursor: default; box-shadow: none;">
+                        <i class="ph-fill ph-check-circle" style="margin-right:0.5rem"></i> Active Plan
+                    </button>
+                    <button onclick="downgradePlan()" class="btn-downgrade">Switch to Free Plan</button>
+                `;
             } else {
-                // If Free is active
-                dom.btnContainerFree.innerHTML = '<span class="current-plan-badge">Current Plan</span>';
-                dom.btnContainerPro.innerHTML = '<button class="btn-primary" id="btn-upgrade-pro">Switch to Pro</button>';
-                
-                // Re-attach listener because innerHTML wiped it
+                // Free State
+                dom.subActionArea.innerHTML = `
+                    <button id="btn-upgrade-pro" class="btn-pro">Get Pro for Free</button>
+                    <div style="font-size: 0.85rem; color: var(--text-muted);">No credit card required.</div>
+                `;
                 document.getElementById('btn-upgrade-pro').addEventListener('click', upgradeToPro);
             }
         }
 
         function upgradeToPro() {
             const btn = document.getElementById('btn-upgrade-pro');
-            const originalText = btn.textContent;
-            btn.textContent = 'Activating...';
+            btn.textContent = 'Unlocking...';
             btn.disabled = true;
             
-            // Simulate network request
             setTimeout(() => {
                 localStorage.setItem('stackbase_plan', 'pro');
                 updateSubscriptionUI();
-                showToast('Welcome to StackBase Pro!');
-                
-                // Optional: Confetti or animation could go here
-            }, 1000);
+                showToast('StackBase Pro Activated!');
+                // Little celebration effect
+                const hero = document.querySelector('.sub-hero h2');
+                hero.style.transform = 'scale(1.1)';
+                setTimeout(() => hero.style.transform = 'scale(1)', 300);
+            }, 800);
         }
 
-        // Make downgrade accessible globally for the onclick handler in innerHTML
         window.downgradePlan = function() {
             if(confirm('Are you sure you want to downgrade? You will lose access to Pro features.')) {
                  localStorage.setItem('stackbase_plan', 'free');
