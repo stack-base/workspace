@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workspace | StackBase</title>
+    <link rel="shortcut icon" href="https://stack-base.github.io/media/brand/stackbase/stackbase-icon.png" type="image/x-icon">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&family=Ubuntu:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+        $(function() {
+            $("#navbar-placeholder").load("https://stack-base.github.io/framework/navbar-1/index.html");
+        });
+    </script>
+    <script>
+        $(function() {
+            $("#footer-placeholder").load("https://stack-base.github.io/framework/footer-1/index.html");
+        });
+    </script>
+    
+    <style>
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Roboto', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background-color: #f9fafb;
+            color: #1f2937;
+            margin: 0; padding: 0;
+            font-size: 16px; line-height: 1.6;
+        }
+        
+        a { text-decoration: none; color: inherit; transition: color 0.2s ease-in-out; }
+        button { cursor: pointer; font-family: inherit; border: none; background: none; }
+        h1, h2, h3, h4 { font-family: 'Ubuntu', sans-serif; }
+        
+        .hero-section {
+            color: white; padding-top: 6rem; padding-bottom: 6rem; text-align: center;
+            background-image: linear-gradient(rgba(17, 24, 39, 0.95), rgba(31, 41, 55, 0.95)), 
+                              url('https://placehold.co/1920x1080/1f2937/2563eb?text=Workspace');
+            background-size: cover; background-position: center;
+        }
+        .hero-section h1 { font-size: 2.5rem; font-weight: 700; letter-spacing: -0.025em; margin: 0 auto 1.5rem auto; }
+        .hero-section p { font-size: 1.25rem; color: #d1d5db; max-width: 48rem; margin: 0 auto 2.5rem auto; }
+        
+        .hero-cta-container { display: flex; flex-direction: column; justify-content: center; gap: 1rem; margin-bottom: 4rem; }
+        .hero-cta-container a {
+            padding: 0.75rem 2rem; border-radius: 0.5rem; font-size: 1.125rem; font-weight: 500;
+            transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .hero-cta-primary { background-image: linear-gradient(to right, #3b82f6, #4f46e5); color: white; }
+        .hero-cta-primary:hover { transform: scale(1.05); }
+        .hero-cta-secondary { background-color: #4b5563; color: #d1d5db; }
+        .hero-cta-secondary:hover { background-color: #374151; }
+
+        .hero-visual-wrapper {
+            border: 1px solid transparent;
+            border-radius: 12px;
+            padding: 10px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        .screenshot-frame {
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #111827;
+            position: relative;
+            padding-top: 56.25%;
+            border: 1px solid #374151;
+        }
+        .screenshot-img {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+        
+        .features-section { padding-top: 6rem; padding-bottom: 6rem; background-color: white; }
+        .features-header { text-align: center; margin-bottom: 4rem; }
+        .features-header .tagline { color: #3b82f6; font-weight: 600; font-size: 0.875rem; text-transform: uppercase; }
+        .features-header h2 { font-size: 2.25rem; font-weight: 700; color: #111827; margin-top: 0.5rem; }
+        .features-header p { font-size: 1.125rem; color: #4b5563; margin-top: 1rem; max-width: 42rem; margin-left: auto; margin-right: auto; }
+        
+        .features-grid { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        .feature-card {
+            background-color: #f9fafb; padding: 2rem; border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: box-shadow 0.3s ease-in-out;
+            display: flex; flex-direction: column; border: 1px solid #e5e7eb;
+        }
+        .feature-card:hover { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); border-color: #3b82f6; }
+        .feature-icon-container {
+            background-color: #dbeafe; color: #2563eb; border-radius: 9999px;
+            height: 3rem; width: 3rem; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem;
+        }
+        .feature-icon-container svg { height: 1.5rem; width: 1.5rem; }
+        .feature-card h3 { font-size: 1.5rem; font-weight: 600; color: #111827; margin: 0 0 0.75rem 0; }
+        .feature-card p { color: #4b5563; margin: 0; flex-grow: 1; }
+
+        .studio-section {
+            background-color: #111827;
+            color: #fff;
+            padding-top: 6rem;
+            padding-bottom: 6rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .studio-section::before {
+            content: '';
+            position: absolute;
+            top: -10%; right: -10%;
+            width: 60%; height: 80%;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(17, 24, 39, 0) 70%);
+            z-index: 0;
+        }
+
+        .studio-intro { text-align: center; margin-bottom: 5rem; position: relative; z-index: 1; }
+        .studio-intro .tagline { color: #60a5fa; font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.1em; }
+        .studio-intro h2 { 
+            font-size: 2.5rem; font-weight: 800; margin-top: 0.5rem; 
+            background: linear-gradient(to right, #fff, #bfdbfe); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .studio-intro p { font-size: 1.25rem; color: #9ca3af; max-width: 48rem; margin: 1rem auto 0 auto; }
+
+        .feature-row {
+            display: flex;
+            flex-direction: column;
+            gap: 3rem;
+            margin-bottom: 6rem;
+            position: relative;
+            z-index: 1;
+            align-items: center;
+        }
+        
+        .feature-row:last-child { margin-bottom: 0; }
+
+        .feature-text { flex: 1; }
+        .feature-text h3 { font-size: 2rem; font-weight: 700; margin-bottom: 1rem; color: white; }
+        .feature-text p { font-size: 1.1rem; color: #d1d5db; margin-bottom: 1.5rem; }
+        .feature-list { list-style: none; padding: 0; margin: 0; }
+        .feature-list li { display: flex; align-items: start; gap: 0.75rem; margin-bottom: 0.75rem; color: #9ca3af; }
+        .feature-list svg { width: 1.25rem; height: 1.25rem; color: #3b82f6; flex-shrink: 0; margin-top: 4px; }
+
+        .feature-visual { flex: 1; width: 100%; }
+        
+        .studio-screenshot-container {
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 12px;
+            padding: 8px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .screenshot-placeholder {
+            background-color: #0f172a;
+            width: 100%;
+            aspect-ratio: 16/10;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #475569;
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow: hidden;
+            border: 1px solid #1e293b;
+        }
+        
+        .screenshot-placeholder img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+        }
+
+        @media (min-width: 1024px) {
+            .feature-row { flex-direction: row; gap: 5rem; }
+            .feature-row.reverse { flex-direction: row-reverse; }
+        }
+
+        .app-first-section { padding-top: 6rem; padding-bottom: 6rem; background-color: #f9fafb; }
+        .app-first-container { display: flex; flex-direction: column; align-items: center; gap: 3rem; }
+        .app-first-text { width: 100%; }
+        .app-first-text .tagline { color: #3b82f6; font-weight: 600; font-size: 0.875rem; text-transform: uppercase; }
+        .app-first-text h2 { font-size: 2.25rem; font-weight: 700; color: #111827; margin-top: 0.5rem; margin-bottom: 1.5rem; }
+        .app-first-text p { font-size: 1.125rem; color: #4b5563; margin-bottom: 1.5rem; }
+        .app-first-list { list-style: none; padding-left: 0; margin: 0; }
+        .app-first-list li { display: flex; align-items: flex-start; margin-bottom: 1rem; }
+        .app-first-list .icon-check { flex-shrink: 0; background-color: #dbeafe; color: #1e40af; border-radius: 9999px; height: 1.5rem; width: 1.5rem; display: flex; align-items: center; justify-content: center; margin-right: 1rem; margin-top: 0.25rem; }
+        .app-first-list .icon-check svg { height: 1rem; width: 1rem; }
+        .app-first-list li span strong { color: #111827; }
+        .app-first-graphic { width: 100%; }
+        
+        .app-preview-block { background-color: #ffffff; border-radius: 0.75rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); padding: 1.5rem; border: 1px solid #e5e7eb; }
+        .app-window-controls { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; }
+        .app-window-controls div { height: 0.75rem; width: 0.75rem; border-radius: 9999px; }
+        .app-window-controls .red { background-color: #ef4444; }
+        .app-window-controls .yellow { background-color: #f59e0b; }
+        .app-window-controls .green { background-color: #10b981; }
+
+        .cta-section {
+            background-image: linear-gradient(to right, #3b82f6, #4f46e5); color: white;
+            padding-top: 5rem; padding-bottom: 5rem; text-align: center;
+        }
+        .cta-section h2 { font-size: 2.25rem; font-weight: 700; margin-top: 0; margin-bottom: 1rem; }
+        .cta-section p { font-size: 1.25rem; color: #e0e7ff; max-width: 42rem; margin: 0 auto 2rem auto; }
+        .cta-section a {
+            background-color: white; color: #4f46e5; padding: 0.75rem 2.5rem;
+            border-radius: 0.5rem; font-size: 1.125rem; font-weight: 700;
+            transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); display: inline-block;
+        }
+        .cta-section a:hover { background-color: #f3f4f6; transform: scale(1.05); }
+
+        #darkModeToggle { background: none; border: none; color: #9ca3af; cursor: pointer; padding: 0; margin: 0; display: flex; align-items: center; justify-content: center; transition: color 0.2s; }
+        #darkModeToggle:hover { color: white; }
+        #darkModeToggle svg { height: 1.5rem; width: 1.5rem; }
+        #darkModeToggle .icon-sun { display: none; }
+        #darkModeToggle .icon-moon { display: block; }
+        body.dark-mode #darkModeToggle .icon-sun { display: block; }
+        body.dark-mode #darkModeToggle .icon-moon { display: none; }
+
+        body.dark-mode { background-color: #111827; color: #d1d5db; }
+        body.dark-mode .features-section { background-color: #1f2937; }
+        body.dark-mode .features-header h2 { color: white; }
+        body.dark-mode .features-header p { color: #d1d5db; }
+        body.dark-mode .feature-card { background-color: #111827; box-shadow: none; border: 1px solid #374151; }
+        body.dark-mode .feature-card h3 { color: white; }
+        body.dark-mode .feature-card p { color: #d1d5db; }
+        body.dark-mode .app-first-section { background-color: #1f2937; }
+        body.dark-mode .app-first-text h2 { color: white; }
+        body.dark-mode .app-first-text p { color: #d1d5db; }
+        body.dark-mode .app-first-list li span { color: #d1d5db; }
+        body.dark-mode .app-first-list li span strong { color: white; }
+        body.dark-mode .app-preview-block { background-color: #111827; border-color: #374151; }
+        body.dark-mode .screenshot-placeholder { background-color: #1f2937; color: #94a3b8; border-color: #374151; }
+
+        @media (min-width: 640px) {
+            .hero-section h1 { font-size: 3rem; }
+            .hero-section p { font-size: 1.5rem; }
+            .hero-cta-container { flex-direction: row; }
+            .features-header h2, .app-first-text h2, .cta-section h2 { font-size: 2.5rem; }
+        }
+        @media (min-width: 768px) {
+            .mobile-menu { display: none !important; }
+            .features-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (min-width: 1024px) {
+            .hero-section h1 { font-size: 3.75rem; }
+            .app-first-container { flex-direction: row; gap: 4rem; }
+            .app-first-text, .app-first-graphic { width: 50%; }
+        }
+
+    </style>
+</head>
+<body>
+    <div id="navbar-placeholder"></div>
+
+    <main>
+        
+        <section class="hero-section">
+            <div class="container">
+                <h1>Your Unified Productivity Hub</h1>
+                <p>
+                    Access all your StackBase applications—TimeTrekker, SwiftInvoice, and Data Studio—from one secure, centralized dashboard.
+                </p>
+                <div class="hero-cta-container">
+                    <a href="https://stack-base.github.io/workspace/page" class="hero-cta-primary">Launch Workspace</a>
+                    <a href="#features" class="hero-cta-secondary">Explore Features</a>
+                </div>
+                
+                <div class="hero-visual-wrapper">
+                    <div class="screenshot-frame">
+                        <div class="screenshot-placeholder" style="position: absolute; top:0; left:0; height:100%; width:100%;">
+                            <div style="text-align:center;">
+                                <img src="https://placehold.co/1280x800/f3f4f6/2563eb?text=Workspace+Dashboard" alt="Workspace UI Preview" class="screenshot-img">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="features" class="features-section">
+            <div class="container">
+                <div class="features-header">
+                    <span class="tagline">Core Infrastructure</span>
+                    <h2>Everything In One Place</h2>
+                    <p>Designed to eliminate friction between your tools and your workflow.</p>
+                </div>
+                
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" /></svg>
+                        </div>
+                        <h3>Centralized App Grid</h3>
+                        <p>Launch TimeTrekker, SwiftInvoice, and Data Studio directly from your personalized home screen. Pin or hide modules to suit your needs.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" /></svg>
+                        </div>
+                        <h3>Unified Authentication</h3>
+                        <p>Sign in once with Firebase Auth. Link your Google account or use a traditional email setup to seamlessly access all your tools across devices.</p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon-container">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 00-5.78 1.128 2.25 2.25 0 01-2.4 2.245 4.5 4.5 0 008.4-2.245c0-.399-.078-.78-.22-1.128zm0 0a15.998 15.998 0 003.388-1.62m-5.043-.025a15.994 15.994 0 011.622-3.395m3.42 3.42a15.995 15.995 0 004.764-4.648l3.876-5.814a1.151 1.151 0 00-1.597-1.597L14.146 6.32a15.996 15.996 0 00-4.649 4.763m3.42 3.42a6.776 6.776 0 00-3.42-3.42" /></svg>
+                        </div>
+                        <h3>Global Preferences</h3>
+                        <p>Set it and forget it. Toggle system-wide Dark Mode and manage security credentials from a single, integrated settings menu.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="studio" class="studio-section">
+            <div class="container">
+                <div class="studio-intro">
+                    <span class="tagline">Platform-Level Control</span>
+                    <h2>The Account Center</h2>
+                    <p>
+                        Workspace goes beyond just launching apps. It provides a comprehensive command center for your entire StackBase identity.
+                    </p>
+                </div>
+
+                <div class="feature-row">
+                    <div class="feature-text">
+                        <h3>Identity & Security Management</h3>
+                        <p>
+                            Keep your data secure while maintaining easy access. The Account Center provides deep control over your digital footprint.
+                        </p>
+                        <ul class="feature-list">
+                            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> <strong>Linked Providers:</strong> Connect Google for seamless, one-click access.</li>
+                            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> <strong>Profile Customization:</strong> Update your display name and visual identity globally.</li>
+                            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> <strong>Data Privacy:</strong> Complete ownership with the ability to permanently delete your account.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="studio-screenshot-container">
+                            <div class="screenshot-placeholder">
+                                <img src="https://placehold.co/800x500/111827/3b82f6?text=Account+Center+UI" alt="Account Center View">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="feature-row reverse">
+                    <div class="feature-text">
+                        <h3>Integrated Help Center</h3>
+                        <p>
+                            Get unstuck instantly. We've built support directly into the dashboard so you never have to leave your workflow.
+                        </p>
+                        <ul class="feature-list">
+                            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> <strong>Instant Search:</strong> Find answers to billing, password, and module queries instantly.</li>
+                            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> <strong>Interactive FAQs:</strong> Navigate accordion-style knowledge bases effortlessly.</li>
+                            <li><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> <strong>Direct Support:</strong> Ping our technical team with one click directly from the UI.</li>
+                        </ul>
+                    </div>
+                    <div class="feature-visual">
+                        <div class="studio-screenshot-container">
+                            <div class="screenshot-placeholder">
+                                <img src="https://placehold.co/800x500/111827/3b82f6?text=Help+Center+UI" alt="Help Center View">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="app-first-section">
+            <div class="container app-first-container">
+                <div class="app-first-text">
+                    <span class="tagline">Modern Architecture</span>
+                    <h2>Designed for Frictionless Navigation</h2>
+                    <p>Workspace is built as a Single Page Application (SPA), meaning navigation is instantaneous and your flow is never broken.</p>
+                    <ul class="app-first-list">
+                        <li>
+                            <div class="icon-check"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></div>
+                            <span><strong>Responsive Sidebar:</strong> Auto-hides on mobile and persists on desktop for rapid menu access.</span>
+                        </li>
+                        <li>
+                            <div class="icon-check"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></div>
+                            <span><strong>Floating Action Bar:</strong> Global search and quick-access notifications follow you everywhere.</span>
+                        </li>
+                        <li>
+                            <div class="icon-check"><svg fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg></div>
+                            <span><strong>Fluid Views:</strong> Transition between Dashboard, Settings, and Account Center with zero page reloads.</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="app-first-graphic">
+                    <div class="app-preview-block">
+                        <div class="app-window-controls"><div class="red"></div><div class="yellow"></div><div class="green"></div></div>
+                        <div class="screenshot-placeholder" style="aspect-ratio: 5/3; background: #f3f4f6; color: #9ca3af; border: none;">
+                            <img src="https://placehold.co/800x500/f3f4f6/2563eb?text=Fluid+Interface" alt="Fluid UI Animation Placeholder">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Ready to Organize Your Tools?</h2>
+                <p>Log in once to access the entire StackBase ecosystem. Your centralized productivity hub awaits.</p>
+                <a href="https://stack-base.github.io/workspace/page">Go to Workspace</a>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="footer-placeholder"></div>
+    
+    <script>
+        (function() {
+            // 1. Apply the theme immediately on page load (prevents white flash)
+            function applyTheme() {
+                var isDarkMode = localStorage.getItem('darkMode') === 'true';
+                if (isDarkMode) {
+                    document.body.classList.add('dark-mode');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                }
+            }
+            
+            applyTheme();
+
+            // 2. Use Event Delegation for dynamically loaded elements
+            document.addEventListener('click', function(event) {
+                // .closest() ensures that clicking the SVG or paths inside the button also works
+                var toggleBtn = event.target.closest('#darkModeToggle');
+                
+                if (toggleBtn) {
+                    // Toggle the class and save preference
+                    document.body.classList.toggle('dark-mode');
+                    var isDarkMode = document.body.classList.contains('dark-mode');
+                    localStorage.setItem('darkMode', isDarkMode);
+                }
+            });
+        })();
+    </script>
+
+</body>
+</html>
