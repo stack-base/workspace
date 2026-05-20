@@ -1048,9 +1048,13 @@
 
         </div>
     </div>
+    
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, updateProfile, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // Import Firestore modules
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        
         const firebaseConfig = {
             apiKey: "AIzaSyDkKhb8m0znWyC2amv6uGpA8KmbkuW-j1U",
             authDomain: "timetrekker-app.firebaseapp.com",
@@ -1060,8 +1064,14 @@
             appId: "1:83185163190:web:e2974c5d0f0274fe5e3f17",
             measurementId: "G-FLZ02E1Y5L"
         };
+        
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
+        const db = getFirestore(app); 
+        
+        // Define Ecosystem Architecture constants
+        const APP_ID = 'timetrekker-v1';
+        const PROFILE_CACHE_KEY = 'stackbase_user_profile_cache';
         
         const dom = {
             userName: document.getElementById('user-name'),
@@ -1086,7 +1096,6 @@
             
             // Views
             viewDashboard: document.getElementById('dashboard-view'),
-            // RENAMED VIEW REFERENCE
             viewAccountCenter: document.getElementById('account-center-view'),
             viewHelp: document.getElementById('help-view'),
             viewSettings: document.getElementById('settings-view'),
@@ -1120,10 +1129,8 @@
 
         // --- Routing Logic ---
         function handleRouting() {
-            // Check if 'view' parameter is missing
             const url = new URL(window.location);
             if (!url.searchParams.has('view')) {
-                // Update the URL to include ?view=dashboard
                 url.searchParams.set('view', 'dashboard');
                 window.history.replaceState({}, '', url);
             }
@@ -1131,23 +1138,20 @@
             const params = new URLSearchParams(window.location.search);
             const viewName = params.get('view') || 'dashboard'; 
 
-            // Update Sidebar UI
             document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
             const activeLink = document.querySelector(`.nav-item[href="?view=${viewName}"]`);
             if (activeLink) activeLink.classList.add('active');
 
-            // Hide all views
             dom.viewDashboard.classList.add('hidden');
             dom.viewAccountCenter.classList.add('hidden');
             dom.viewHelp.classList.add('hidden');
             dom.viewSettings.classList.add('hidden');
 
-            // Show selected view
             if (viewName === 'dashboard') {
                 dom.viewDashboard.classList.remove('hidden');
             } else if (viewName === 'account-center') { 
                 dom.viewAccountCenter.classList.remove('hidden');
-                if(auth.currentUser) populateProfileForm(auth.currentUser);
+                // The syncUserProfile handles the populating now
             } else if (viewName === 'help') {
                 dom.viewHelp.classList.remove('hidden');
             } else if (viewName === 'settings') {
@@ -1155,14 +1159,12 @@
                 updateSettingsThemeButton();
             }
 
-            // Mobile Sidebar Handling
             if(window.innerWidth < 1024) {
                 dom.sidebar.classList.remove('open');
                 dom.sidebarOverlay.classList.remove('open');
             }
         }
 
-        // Global Link Interceptor for SPA feel
         document.addEventListener('click', (e) => {
             const link = e.target.closest('a');
             if (link && link.href.includes('?view=')) {
@@ -1173,9 +1175,7 @@
             }
         });
 
-        // Handle Browser Back/Forward
         window.addEventListener('popstate', handleRouting);
-        // Initialize Routing
         handleRouting();
         // --- End Routing Logic ---
 
@@ -1233,25 +1233,108 @@
             });
         }
 
-        function populateProfileForm(user) {
-            const name = user.displayName || 'User';
-            const email = user.email || 'No Email';
+        // --- FIRESTORE USER PROFILE LOGIC ---
+        
+        async function syncUserProfile(user) {
+            const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
+            
+            // 1. Optimistic UI Load: Check local cache first for instant rendering
+            const cachedRaw = localStorage.getItem(PROFILE_CACHE_KEY);
+            if (cachedRaw) {
+                try {
+                    const cachedData = JSON.parse(cachedRaw);
+                    renderProfile(cachedData, user);
+                    if (!dom.viewAccountCenter.classList.contains('hidden')) {
+                        populateProfileForm(cachedData, user);
+                    }
+                } catch (e) {
+                    console.warn("Cache parse failed, fetching fresh.");
+                }
+            }
+        
+            // 2. Fetch fresh data from Firestore
+            try {
+                const docSnap = await getDoc(userRef);
+                let userData;
+        
+                if (docSnap.exists()) {
+                    userData = docSnap.data();
+                } else {
+                    // First-time login: Create the initial Firestore document
+                    userData = {
+                        name: user.displayName || '',
+                        email: user.email || '',
+                        avatar: user.photoURL ? user.photoURL.replace(/=s\d+-c/g, '=s1024-c') : '',
+                        provider: user.providerData[0]?.providerId || 'unknown',
+                        createdAt: serverTimestamp(),
+                        tasks: 0,
+                        focus: 0
+                    };
+                    await setDoc(userRef, userData);
+                }
+        
+                // 3. Update Cache and UI with fresh data
+                localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(userData));
+                renderProfile(userData, user);
+                if (!dom.viewAccountCenter.classList.contains('hidden')) {
+                    populateProfileForm(userData, user);
+                }
+                updateGreeting(userData.name);
+        
+            } catch (error) {
+                console.error("Error syncing user profile:", error);
+            }
+        }
+
+        function renderProfile(userData, authUser) {
+            dom.userName.classList.remove('skeleton');
+            dom.userEmail.classList.remove('skeleton');
+            dom.userName.style.width = 'auto'; 
+            dom.userName.style.height = 'auto';
+            dom.userEmail.style.width = 'auto'; 
+            dom.userEmail.style.height = 'auto';
+            
+            // Fallback to authUser if Firestore data is missing
+            const email = userData.email || authUser.email;
+            const name = userData.name || authUser.displayName || email.split('@')[0];
+            
+            dom.userEmail.textContent = email;
+            dom.userName.textContent = name;
+            
+            dom.avatarContainer.innerHTML = ''; 
+            if (userData.avatar) {
+                const img = document.createElement('img');
+                // Request a crisp 256x256 image for the sidebar
+                img.src = userData.avatar.replace(/=s\d+-c/g, '=s256-c');
+                dom.avatarContainer.appendChild(img);
+            } else {
+                dom.avatarContainer.textContent = name.charAt(0).toUpperCase();
+            }
+        }
+        
+        function populateProfileForm(userData, authUser) {
+            const email = userData.email || authUser.email;
+            const name = userData.name || authUser.displayName || email.split('@')[0];
+            
             dom.profileEmailInput.value = email;
-            dom.profileNameInput.value = user.displayName || '';
+            dom.profileNameInput.value = name;
             dom.displayNameBig.textContent = name;
             dom.displayEmailBig.textContent = email;
+            
             dom.profileAvatarDisplay.innerHTML = '';
-            if (user.photoURL) {
+            if (userData.avatar) {
                 const img = document.createElement('img');
-                img.src = user.photoURL.replace(/=s\d+-c/g, '=s1024-c');
+                // Request full 1024x1024 resolution image for the Account Center
+                img.src = userData.avatar.replace(/=s\d+-c/g, '=s1024-c');
                 dom.profileAvatarDisplay.appendChild(img);
             } else {
-                const initial = (name || email).charAt(0).toUpperCase();
-                dom.profileAvatarDisplay.textContent = initial;
+                dom.profileAvatarDisplay.textContent = name.charAt(0).toUpperCase();
             }
+            
             dom.providerBadges.innerHTML = '';
-            const providers = user.providerData.map(p => p.providerId);
-            if (providers.includes('google.com')) {
+            const provider = userData.provider || authUser.providerData[0]?.providerId || 'unknown';
+            
+            if (provider.includes('google')) {
                 dom.providerBadges.innerHTML += `
                     <div class="badge google">
                         <svg viewBox="0 0 24 24" width="14" height="14" xmlns="http://www.w3.org/2000/svg">
@@ -1261,38 +1344,55 @@
                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.21-1.19-2.63z" fill="#FBBC05"></path>
                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
                           </g>
-                        </svg>
-                        Google
+                        </svg> Google
                     </div>`;
+            } else if (provider.includes('password')) {
+                dom.providerBadges.innerHTML += `<div class="badge email"><i class="ph-bold ph-envelope-simple"></i> Email</div>`;
             }
-            if (providers.includes('password')) {
-                dom.providerBadges.innerHTML += `
-                    <div class="badge email">
-                        <i class="ph-bold ph-envelope-simple"></i> Email
-                    </div>`;
-            }
-            if (!providers.includes('google.com')) {
+        
+            if (!provider.includes('google')) {
                 dom.googleLinkSection.classList.remove('hidden');
             } else {
                 dom.googleLinkSection.classList.add('hidden');
             }
         }
+        
+        // Submit handler targeting Firestore instead of Auth updateProfile
         dom.profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
             if(!user) return;
+            
             const newName = dom.profileNameInput.value.trim();
             const originalBtnText = dom.saveProfileBtn.textContent;
+            
             try {
                 dom.saveProfileBtn.disabled = true;
                 dom.saveProfileBtn.textContent = 'Saving...';
-                await updateProfile(user, { displayName: newName });
-                renderProfile(user);
-                populateProfileForm(user);
-                updateGreeting(newName);
+                
+                // Update Firestore Document
+                const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
+                await updateDoc(userRef, { 
+                    name: newName,
+                    updatedAt: serverTimestamp() 
+                });
+                
+                // Update Local Cache immediately for snappy UX
+                const cachedRaw = localStorage.getItem(PROFILE_CACHE_KEY);
+                if (cachedRaw) {
+                    const cachedData = JSON.parse(cachedRaw);
+                    cachedData.name = newName;
+                    localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cachedData));
+                    
+                    // Re-render UI
+                    renderProfile(cachedData, user);
+                    populateProfileForm(cachedData, user);
+                    updateGreeting(newName);
+                }
+                
                 showToast('Profile updated successfully');
             } catch (error) {
-                console.error(error);
+                console.error("Firestore update failed", error);
                 showToast(error.message, 'error');
             } finally {
                 dom.saveProfileBtn.disabled = false;
@@ -1391,6 +1491,7 @@
             "Small progress is still progress."
         ];
         dom.dailyQuote.querySelector('span').textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        
         function updateGreeting(userName = '') {
             const hour = new Date().getHours();
             let greeting = 'Good evening';
@@ -1399,37 +1500,19 @@
             const namePart = userName ? `, ${userName.split(' ')[0]}` : '';
             dom.greetingText.textContent = `${greeting}${namePart}`;
         }
+        
         updateGreeting();
+        
+        // Listen to Auth State and Trigger Sync
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                renderProfile(user);
-                updateGreeting(user.displayName || user.email.split('@')[0]);
-
-                if (!dom.viewAccountCenter.classList.contains('hidden')) {
-                    populateProfileForm(user);
-                }
+                syncUserProfile(user);
             } else {
+                localStorage.removeItem(PROFILE_CACHE_KEY);
                 window.location.replace('https://stack-base.github.io/account/login?redirectUrl=https://stack-base.github.io/workspace/page?view=dashboard');
             }
         });
-        function renderProfile(user) {
-            dom.userName.classList.remove('skeleton');
-            dom.userEmail.classList.remove('skeleton');
-            dom.userName.style.width = 'auto'; dom.userName.style.height = 'auto';
-            dom.userEmail.style.width = 'auto'; dom.userEmail.style.height = 'auto';
-            dom.userEmail.textContent = user.email;
-            const displayName = user.displayName || user.email.split('@')[0];
-            dom.userName.textContent = displayName;
-            dom.avatarContainer.innerHTML = ''; 
-            if (user.photoURL) {
-                const img = document.createElement('img');
-                img.src = user.photoURL.replace(/=s\d+-c/g, '=s256-c');
-                dom.avatarContainer.appendChild(img);
-            } else {
-                const initial = displayName.charAt(0).toUpperCase();
-                dom.avatarContainer.textContent = initial;
-            }
-        }
+
         let hiddenApps = JSON.parse(localStorage.getItem('stackbase_hidden_apps') || '[]');
         function applyHiddenState() {
             document.querySelectorAll('.app-item').forEach(card => {
