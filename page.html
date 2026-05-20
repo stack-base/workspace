@@ -1052,7 +1052,6 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        // Import Firestore modules
         import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         const firebaseConfig = {
@@ -1069,7 +1068,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app); 
         
-        // Define Ecosystem Architecture constants
         const APP_ID = 'timetrekker-v1';
         const PROFILE_CACHE_KEY = 'stackbase_user_profile_cache';
         
@@ -1094,20 +1092,16 @@
             appsGrid: document.getElementById('apps-grid'),
             resetViewBtn: document.getElementById('reset-apps-view'),
             
-            // Views
             viewDashboard: document.getElementById('dashboard-view'),
             viewAccountCenter: document.getElementById('account-center-view'),
             viewHelp: document.getElementById('help-view'),
             viewSettings: document.getElementById('settings-view'),
             
-            // Help Specific
             faqSearch: document.getElementById('faq-search'),
             contactBtn: document.getElementById('contact-support-btn'),
             
-            // Settings Specific
             settingsThemeBtn: document.getElementById('settings-theme-btn'),
             
-            // Profile Form
             profileForm: document.getElementById('profile-form'),
             profileEmailInput: document.getElementById('profile-email-input'),
             profileNameInput: document.getElementById('profile-name-input'),
@@ -1127,7 +1121,6 @@
             toastMessage: document.getElementById('toast-message')
         };
 
-        // --- Routing Logic ---
         function handleRouting() {
             const url = new URL(window.location);
             if (!url.searchParams.has('view')) {
@@ -1151,7 +1144,6 @@
                 dom.viewDashboard.classList.remove('hidden');
             } else if (viewName === 'account-center') { 
                 dom.viewAccountCenter.classList.remove('hidden');
-                // The syncUserProfile handles the populating now
             } else if (viewName === 'help') {
                 dom.viewHelp.classList.remove('hidden');
             } else if (viewName === 'settings') {
@@ -1177,8 +1169,6 @@
 
         window.addEventListener('popstate', handleRouting);
         handleRouting();
-        // --- End Routing Logic ---
-
 
         function showToast(message, type = 'success') {
             dom.toastMessage.textContent = message;
@@ -1195,7 +1185,6 @@
             }, 3000);
         }
         
-        // FAQ & Help Logic
         document.querySelectorAll('.faq-question').forEach(button => {
             button.addEventListener('click', () => {
                 const item = button.parentElement;
@@ -1232,13 +1221,10 @@
                 }, 1500);
             });
         }
-
-        // --- FIRESTORE USER PROFILE LOGIC ---
         
         async function syncUserProfile(user) {
             const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
             
-            // 1. Optimistic UI Load: Check local cache first for instant rendering
             const cachedRaw = localStorage.getItem(PROFILE_CACHE_KEY);
             if (cachedRaw) {
                 try {
@@ -1252,7 +1238,6 @@
                 }
             }
         
-            // 2. Fetch fresh data from Firestore
             try {
                 const docSnap = await getDoc(userRef);
                 let userData;
@@ -1260,7 +1245,6 @@
                 if (docSnap.exists()) {
                     userData = docSnap.data();
                 } else {
-                    // First-time login: Create the initial Firestore document
                     userData = {
                         name: user.displayName || '',
                         email: user.email || '',
@@ -1273,13 +1257,15 @@
                     await setDoc(userRef, userData);
                 }
         
-                // 3. Update Cache and UI with fresh data
                 localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(userData));
                 renderProfile(userData, user);
                 if (!dom.viewAccountCenter.classList.contains('hidden')) {
                     populateProfileForm(userData, user);
                 }
-                updateGreeting(userData.name);
+                
+                const dbName = userData.name || userData.displayName || userData.fullName;
+                const authName = user.displayName || (user.email ? user.email.split('@')[0] : 'User');
+                updateGreeting(dbName || authName);
         
             } catch (error) {
                 console.error("Error syncing user profile:", error);
@@ -1294,41 +1280,48 @@
             dom.userEmail.style.width = 'auto'; 
             dom.userEmail.style.height = 'auto';
             
-            // Fallback to authUser if Firestore data is missing
-            const email = userData.email || authUser.email;
-            const name = userData.name || authUser.displayName || email.split('@')[0];
+            const dbName = userData.name || userData.displayName || userData.fullName;
+            const authName = authUser.displayName || (authUser.email || 'User').split('@')[0];
+            const finalName = dbName || authName;
+
+            const dbAvatar = userData.avatar || userData.photoURL || userData.picture;
+            const finalAvatar = dbAvatar || authUser.photoURL;
             
-            dom.userEmail.textContent = email;
-            dom.userName.textContent = name;
+            dom.userEmail.textContent = userData.email || authUser.email;
+            dom.userName.textContent = finalName;
             
             dom.avatarContainer.innerHTML = ''; 
-            if (userData.avatar) {
+            if (finalAvatar) {
                 const img = document.createElement('img');
-                // Request a crisp 256x256 image for the sidebar
-                img.src = userData.avatar.replace(/=s\d+-c/g, '=s256-c');
+                img.src = finalAvatar.replace(/=s\d+-c/g, '=s256-c');
                 dom.avatarContainer.appendChild(img);
             } else {
-                dom.avatarContainer.textContent = name.charAt(0).toUpperCase();
+                dom.avatarContainer.textContent = finalName.charAt(0).toUpperCase();
             }
         }
         
         function populateProfileForm(userData, authUser) {
+            const dbName = userData.name || userData.displayName || userData.fullName;
+            const authName = authUser.displayName || (authUser.email || 'User').split('@')[0];
+            const finalName = dbName || authName;
+
+            const dbAvatar = userData.avatar || userData.photoURL || userData.picture;
+            const finalAvatar = dbAvatar || authUser.photoURL;
+            
             const email = userData.email || authUser.email;
-            const name = userData.name || authUser.displayName || email.split('@')[0];
             
             dom.profileEmailInput.value = email;
-            dom.profileNameInput.value = name;
-            dom.displayNameBig.textContent = name;
+            dom.profileNameInput.value = finalName;
+            dom.displayNameBig.textContent = finalName;
             dom.displayEmailBig.textContent = email;
             
             dom.profileAvatarDisplay.innerHTML = '';
-            if (userData.avatar) {
+            if (finalAvatar) {
                 const img = document.createElement('img');
-                // Request full 1024x1024 resolution image for the Account Center
-                img.src = userData.avatar.replace(/=s\d+-c/g, '=s1024-c');
+                img.src = finalAvatar.replace(/=s\d+-c/g, '=s1024-c');
                 dom.profileAvatarDisplay.appendChild(img);
             } else {
-                dom.profileAvatarDisplay.textContent = name.charAt(0).toUpperCase();
+                dom.profileAvatarDisplay.textContent = finalName.charAt(0).toUpperCase();
             }
             
             dom.providerBadges.innerHTML = '';
@@ -1357,7 +1350,6 @@
             }
         }
         
-        // Submit handler targeting Firestore instead of Auth updateProfile
         dom.profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
@@ -1370,21 +1362,20 @@
                 dom.saveProfileBtn.disabled = true;
                 dom.saveProfileBtn.textContent = 'Saving...';
                 
-                // Update Firestore Document
                 const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
                 await updateDoc(userRef, { 
                     name: newName,
+                    displayName: newName, 
                     updatedAt: serverTimestamp() 
                 });
                 
-                // Update Local Cache immediately for snappy UX
                 const cachedRaw = localStorage.getItem(PROFILE_CACHE_KEY);
                 if (cachedRaw) {
                     const cachedData = JSON.parse(cachedRaw);
                     cachedData.name = newName;
+                    cachedData.displayName = newName;
                     localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cachedData));
                     
-                    // Re-render UI
                     renderProfile(cachedData, user);
                     populateProfileForm(cachedData, user);
                     updateGreeting(newName);
@@ -1448,7 +1439,6 @@
             }
         });
 
-        // Delete Account Logic
         if (dom.deleteAccountBtn) {
             dom.deleteAccountBtn.addEventListener('click', async () => {
                 const user = auth.currentUser;
@@ -1503,7 +1493,6 @@
         
         updateGreeting();
         
-        // Listen to Auth State and Trigger Sync
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 syncUserProfile(user);
@@ -1617,7 +1606,6 @@
             }
         });
 
-        // Theme Toggle Logic
         function toggleTheme() {
             document.documentElement.classList.toggle('dark');
             const isDark = document.documentElement.classList.contains('dark');
