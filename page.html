@@ -1394,7 +1394,7 @@
         
         // NEW: Redirect to SSO Edit Profile Flow
         dom.editProfileBtn.addEventListener('click', () => {
-            window.location.href = 'https://stack-base.github.io/account/login?flow=editprofile&redirectUrl=https://stack-base.github.io/workspace/page?view=account-center';
+            window.location.href = 'https://stack-base.github.io/account/login?flow=editprofile&app=account-center';
         });
         
         dom.linkGoogleBtn.addEventListener('click', async () => {
@@ -1504,7 +1504,7 @@
                 syncUserProfile(user);
             } else {
                 localStorage.removeItem(PROFILE_CACHE_KEY);
-                window.location.replace('https://stack-base.github.io/account/login?redirectUrl=https://stack-base.github.io/workspace/page?view=dashboard');
+                window.location.replace('https://stack-base.github.io/account/login?app=account-center');
             }
         });
 
