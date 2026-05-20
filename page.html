@@ -1243,7 +1243,7 @@
             dom.profileAvatarDisplay.innerHTML = '';
             if (user.photoURL) {
                 const img = document.createElement('img');
-                img.src = user.photoURL;
+                img.src = user.photoURL.replace(/=s\d+-c/g, '=s1024-c');
                 dom.profileAvatarDisplay.appendChild(img);
             } else {
                 const initial = (name || email).charAt(0).toUpperCase();
@@ -1423,7 +1423,7 @@
             dom.avatarContainer.innerHTML = ''; 
             if (user.photoURL) {
                 const img = document.createElement('img');
-                img.src = user.photoURL;
+                img.src = user.photoURL.replace(/=s\d+-c/g, '=s256-c');
                 dom.avatarContainer.appendChild(img);
             } else {
                 const initial = displayName.charAt(0).toUpperCase();
