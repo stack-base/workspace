@@ -1051,7 +1051,8 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        // ADDED: updateProfile
+        import { getAuth, onAuthStateChanged, signOut, updatePassword, deleteUser, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         const firebaseConfig = {
@@ -1350,6 +1351,7 @@
             }
         }
         
+        // MODIFIED: Now updates Auth and Firestore
         dom.profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
@@ -1362,6 +1364,12 @@
                 dom.saveProfileBtn.disabled = true;
                 dom.saveProfileBtn.textContent = 'Saving...';
                 
+                // 1. Update Firebase Auth Session
+                await updateProfile(user, {
+                    displayName: newName
+                });
+                
+                // 2. Update Firestore Document
                 const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
                 await updateDoc(userRef, { 
                     name: newName,
@@ -1369,6 +1377,7 @@
                     updatedAt: serverTimestamp() 
                 });
                 
+                // 3. Update Local Cache
                 const cachedRaw = localStorage.getItem(PROFILE_CACHE_KEY);
                 if (cachedRaw) {
                     const cachedData = JSON.parse(cachedRaw);
@@ -1383,7 +1392,7 @@
                 
                 showToast('Profile updated successfully');
             } catch (error) {
-                console.error("Firestore update failed", error);
+                console.error("Profile update failed", error);
                 showToast(error.message, 'error');
             } finally {
                 dom.saveProfileBtn.disabled = false;
