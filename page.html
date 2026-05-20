@@ -856,7 +856,10 @@
                                 <label class="form-label">Phone Number</label>
                                 <div class="input-group">
                                     <i class="ph ph-phone"></i>
-                                    <input type="tel" id="profile-phone-input" class="form-input" placeholder="Enter phone number">
+                                    <input type="tel" id="profile-phone-input" class="form-input" disabled>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.4rem; margin-left: 0.2rem;">
+                                    Set during onboarding
                                 </div>
                             </div>
 
@@ -874,14 +877,18 @@
                                     </select>
                                 </div>
                             </div>
-
+                            
                             <div class="form-group">
                                 <label class="form-label">Country Code</label>
                                 <div class="input-group">
                                     <i class="ph ph-globe"></i>
-                                    <input type="text" id="profile-country-input" class="form-input" placeholder="e.g. US, IN, UK">
+                                    <input type="text" id="profile-country-input" class="form-input" disabled>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-light); margin-top: 0.4rem; margin-left: 0.2rem;">
+                                    Set during onboarding
                                 </div>
                             </div>
+
                             <button type="submit" class="btn-primary" id="save-profile-btn">
                                 Save Details
                             </button>
@@ -1134,7 +1141,7 @@
             profileEmailInput: document.getElementById('profile-email-input'),
             profileNameInput: document.getElementById('profile-name-input'),
             
-            // NEW DOM ELEMENTS ADDED HERE
+            // MAP THE FIELDS IN DOM
             profilePhoneInput: document.getElementById('profile-phone-input'),
             profileGenderInput: document.getElementById('profile-gender-input'),
             profileCountryInput: document.getElementById('profile-country-input'),
@@ -1149,7 +1156,7 @@
             passwordForm: document.getElementById('password-form'),
             newPassword: document.getElementById('new-password'),
             confirmPassword: document.getElementById('confirm-password'),
-            savePasswordBtn: document.getElementById('save-password-btn'),
+            savePasswordBtn: document.getElementById('savePasswordBtn'),
             deleteAccountBtn: document.getElementById('delete-account-btn'),
             toast: document.getElementById('toast'),
             toastMessage: document.getElementById('toast-message')
@@ -1347,10 +1354,10 @@
             dom.profileEmailInput.value = email;
             dom.profileNameInput.value = finalName;
             
-            // NEW FIELDS POPULATION
-            dom.profilePhoneInput.value = userData.phone || '';
+            // POPULATE ALL FIELDS
             dom.profileGenderInput.value = userData.gender || '';
-            dom.profileCountryInput.value = userData.country || '';
+            dom.profilePhoneInput.value = userData.phone || 'Not provided';
+            dom.profileCountryInput.value = userData.country || 'Not provided';
             
             dom.displayNameBig.textContent = finalName;
             dom.displayEmailBig.textContent = email;
@@ -1395,10 +1402,9 @@
             const user = auth.currentUser;
             if(!user) return;
             
+            // ONLY EXTRACT EDITABLE FIELDS
             const newName = dom.profileNameInput.value.trim();
-            const newPhone = dom.profilePhoneInput.value.trim();
             const newGender = dom.profileGenderInput.value;
-            const newCountry = dom.profileCountryInput.value.trim().toUpperCase(); 
             
             const originalBtnText = dom.saveProfileBtn.textContent;
             
@@ -1414,9 +1420,7 @@
                 await updateDoc(userRef, { 
                     name: newName,
                     displayName: newName, 
-                    phone: newPhone,
                     gender: newGender,
-                    country: newCountry,
                     updatedAt: serverTimestamp() 
                 });
                 
@@ -1425,9 +1429,8 @@
                     const cachedData = JSON.parse(cachedRaw);
                     cachedData.name = newName;
                     cachedData.displayName = newName;
-                    cachedData.phone = newPhone;
                     cachedData.gender = newGender;
-                    cachedData.country = newCountry;
+                    // DO NOT TOUCH phone/country cache values, keep existing ones intact
                     localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cachedData));
                     
                     renderProfile(cachedData, user);
