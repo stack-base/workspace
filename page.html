@@ -395,7 +395,6 @@
         .toast.success { background: var(--text-main); color: var(--bg-page); }
         .toast.error { background: #ef4444; color: white; }
         
-        /* Renamed Profile Classes to Account Center */
         .account-center-view {
             max-width: 1000px;
             margin: 2rem auto;
@@ -547,7 +546,6 @@
             }
         }
 
-        /* --- Help Center Styles --- */
         .help-hero {
             text-align: center;
             padding: 9rem 1.5rem 5rem;
@@ -604,7 +602,6 @@
         }
         .contact-btn { width: 100%; margin-top: 1rem; }
         
-        /* Settings Page Styles */
         .settings-view {
             max-width: 800px;
             margin: 2rem auto;
@@ -854,6 +851,37 @@
                                     Managed by your login provider
                                 </div>
                             </div>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Phone Number</label>
+                                <div class="input-group">
+                                    <i class="ph ph-phone"></i>
+                                    <input type="tel" id="profile-phone-input" class="form-input" placeholder="Enter phone number">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Gender</label>
+                                <div class="input-group">
+                                    <i class="ph ph-gender-intersex"></i>
+                                    <select id="profile-gender-input" class="form-input" style="cursor: pointer;">
+                                        <option value="" disabled selected>Select Gender</option>
+                                        <option value="male">Male</option>
+                                        <option value="female">Female</option>
+                                        <option value="non-binary">Non-binary</option>
+                                        <option value="other">Other</option>
+                                        <option value="prefer-not-to-say">Prefer not to say</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Country Code</label>
+                                <div class="input-group">
+                                    <i class="ph ph-globe"></i>
+                                    <input type="text" id="profile-country-input" class="form-input" placeholder="e.g. US, IN, UK">
+                                </div>
+                            </div>
                             <button type="submit" class="btn-primary" id="save-profile-btn">
                                 Save Details
                             </button>
@@ -1051,7 +1079,6 @@
     
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        // ADDED: updateProfile
         import { getAuth, onAuthStateChanged, signOut, updatePassword, deleteUser, updateProfile } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, getDoc, setDoc, updateDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
@@ -1106,6 +1133,12 @@
             profileForm: document.getElementById('profile-form'),
             profileEmailInput: document.getElementById('profile-email-input'),
             profileNameInput: document.getElementById('profile-name-input'),
+            
+            // NEW DOM ELEMENTS ADDED HERE
+            profilePhoneInput: document.getElementById('profile-phone-input'),
+            profileGenderInput: document.getElementById('profile-gender-input'),
+            profileCountryInput: document.getElementById('profile-country-input'),
+            
             profileAvatarDisplay: document.getElementById('profile-avatar-display'),
             saveProfileBtn: document.getElementById('save-profile-btn'),
             providerBadges: document.getElementById('provider-badges'),
@@ -1313,6 +1346,12 @@
             
             dom.profileEmailInput.value = email;
             dom.profileNameInput.value = finalName;
+            
+            // NEW FIELDS POPULATION
+            dom.profilePhoneInput.value = userData.phone || '';
+            dom.profileGenderInput.value = userData.gender || '';
+            dom.profileCountryInput.value = userData.country || '';
+            
             dom.displayNameBig.textContent = finalName;
             dom.displayEmailBig.textContent = email;
             
@@ -1351,38 +1390,44 @@
             }
         }
         
-        // MODIFIED: Now updates Auth and Firestore
         dom.profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
             if(!user) return;
             
             const newName = dom.profileNameInput.value.trim();
+            const newPhone = dom.profilePhoneInput.value.trim();
+            const newGender = dom.profileGenderInput.value;
+            const newCountry = dom.profileCountryInput.value.trim().toUpperCase(); 
+            
             const originalBtnText = dom.saveProfileBtn.textContent;
             
             try {
                 dom.saveProfileBtn.disabled = true;
                 dom.saveProfileBtn.textContent = 'Saving...';
                 
-                // 1. Update Firebase Auth Session
                 await updateProfile(user, {
                     displayName: newName
                 });
                 
-                // 2. Update Firestore Document
                 const userRef = doc(db, 'artifacts', APP_ID, 'users', user.uid);
                 await updateDoc(userRef, { 
                     name: newName,
                     displayName: newName, 
+                    phone: newPhone,
+                    gender: newGender,
+                    country: newCountry,
                     updatedAt: serverTimestamp() 
                 });
                 
-                // 3. Update Local Cache
                 const cachedRaw = localStorage.getItem(PROFILE_CACHE_KEY);
                 if (cachedRaw) {
                     const cachedData = JSON.parse(cachedRaw);
                     cachedData.name = newName;
                     cachedData.displayName = newName;
+                    cachedData.phone = newPhone;
+                    cachedData.gender = newGender;
+                    cachedData.country = newCountry;
                     localStorage.setItem(PROFILE_CACHE_KEY, JSON.stringify(cachedData));
                     
                     renderProfile(cachedData, user);
